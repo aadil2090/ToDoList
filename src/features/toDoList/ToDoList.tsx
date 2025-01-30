@@ -1,18 +1,21 @@
 import { RootState } from "@/app/store"
 import { useDispatch, useSelector } from "react-redux"
-import { addToDo, toggleToDo, updateToDo } from "./toDoSlice"
+import { addToDo, selectFilteredTodos, setFilter, toDoListType, toggleToDo, updateToDo } from "./toDoSlice"
 import { useState } from "react"
 import { ToDoInput } from "./ToDoInput"
 import { ToDoItem } from "./ToDoItem"
 
 export const ToDoList = () => {
   const toDoList = useSelector((state: RootState) => state.toDoList)
+  const filter = useSelector((state: RootState) => state.toDoList.filter)
+
+  const filteredTodos = useSelector(selectFilteredTodos);
+
   const dispatch = useDispatch()
 
   const [task, setTask] = useState<string>("")
   const [isEdit, setIsEdit] = useState(false)
   const [editId, setEditId] = useState("")
-  const [filter, setFilter] = useState("all")
 
   const handleAddToDo = () => {
     if (task.trim() === "") return
@@ -40,23 +43,6 @@ export const ToDoList = () => {
     dispatch(toggleToDo(item))
   }
 
-  const handleFilter = (filter: string) => {
-    setFilter(filter)
-
-    switch (filter) {
-      case "all":
-        break
-
-      case "active":
-        break
-
-      case "completed":
-        break
-
-      default:
-        break
-    }
-  }
 
   return (
     <div style={{ width: "100%", margin: "0 auto" }}>
@@ -90,9 +76,9 @@ export const ToDoList = () => {
       </div>
 
       <div style={{ marginBottom: "20px" }}>
-        <button onClick={() => handleFilter("all")}>All</button>
-        <button onClick={() => handleFilter("active")}>Active</button>
-        <button onClick={() => handleFilter("completed")}>Completed</button>
+        <button onClick={() => dispatch(setFilter("all"))}>All</button>
+        <button onClick={() => dispatch(setFilter("active"))}>Active</button>
+        <button onClick={() => dispatch(setFilter("completed"))}>Completed</button>
       </div>
 
       <div
@@ -105,7 +91,7 @@ export const ToDoList = () => {
           margin: "0 auto",
         }}
       >
-        {toDoList.toDoList.map(
+        {filteredTodos.map(
           (item: { id: string; text: string; completed: boolean }) => (
             <ToDoItem
               item={item}
