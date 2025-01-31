@@ -10,13 +10,18 @@ export const ToDoInput = ({ task, setTask, handleAddToDo }: ToDoInputProps) => {
       <input
         type="text"
         style={{
-          height: "34px",
-          backgroundColor: "#15161bcc",
+          height: "48px",
+          backgroundColor: "#111215",
           border: "none",
-          borderRadius: "5px",
+          borderRadius: "12px",
           marginRight: "10px",
-          width: "24%",
+          width: "40%",
+          marginLeft: "10px",
+          fontSize: "16px",
+          paddingInlineStart: "10px",
+          outline: "none",
         }}
+        placeholder="Create new task"
         value={task}
         onChange={e => setTask(e.target.value)}
         onKeyDown={e => {

@@ -1,18 +1,32 @@
-import { RootState } from "@/app/store"
 import { useDispatch, useSelector } from "react-redux"
-import { addToDo, toggleToDo, updateToDo } from "./toDoSlice"
+import {
+  activeToDos,
+  addToDo,
+  completedToDos,
+  filteredToDos,
+  setFilter,
+  toggleToDo,
+  totalToDos,
+  updateToDo,
+} from "./toDoSlice"
 import { useState } from "react"
 import { ToDoInput } from "./ToDoInput"
 import { ToDoItem } from "./ToDoItem"
+import { RootState } from "@/app/store"
 
 export const ToDoList = () => {
-  const toDoList = useSelector((state: RootState) => state.toDoList)
   const dispatch = useDispatch()
+  const filteredToDoList = useSelector(filteredToDos)
+
+  const filter = useSelector((state: RootState) => state.toDoList.filter)
+
+  const activeCount = useSelector(activeToDos)
+  const completedCount = useSelector(completedToDos)
+  const totalToDosCount = useSelector(totalToDos)
 
   const [task, setTask] = useState<string>("")
   const [isEdit, setIsEdit] = useState(false)
   const [editId, setEditId] = useState("")
-  const [filter, setFilter] = useState("all")
 
   const handleAddToDo = () => {
     if (task.trim() === "") return
@@ -40,24 +54,6 @@ export const ToDoList = () => {
     dispatch(toggleToDo(item))
   }
 
-  const handleFilter = (filter: string) => {
-    setFilter(filter)
-
-    switch (filter) {
-      case "all":
-        break
-
-      case "active":
-        break
-
-      case "completed":
-        break
-
-      default:
-        break
-    }
-  }
-
   return (
     <div style={{ width: "100%", margin: "0 auto" }}>
       <h1>To Do List</h1>
@@ -76,7 +72,7 @@ export const ToDoList = () => {
           handleAddToDo={handleAddToDo}
         />
 
-        <button
+        {/* <button
           onClick={handleAddToDo}
           style={{
             height: "38px",
@@ -86,13 +82,40 @@ export const ToDoList = () => {
           }}
         >
           {isEdit ? "Update" : "Add"}
-        </button>
+        </button> */}
       </div>
 
-      <div style={{ marginBottom: "20px" }}>
-        <button onClick={() => handleFilter("all")}>All</button>
-        <button onClick={() => handleFilter("active")}>Active</button>
-        <button onClick={() => handleFilter("completed")}>Completed</button>
+      <div
+        style={{
+          width: "40%",
+          margin: "0 auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-around",
+          paddingBottom: "20px",
+        }}
+      >
+        <button
+          onClick={() => dispatch(setFilter("all"))}
+          className={`filter-button ${filter === "all" ? "active" : ""} `}
+        >
+          All
+          <span className="count">{totalToDosCount}</span>
+        </button>
+        <button
+          onClick={() => dispatch(setFilter("active"))}
+          className={`filter-button ${filter === "active" ? "active" : ""} `}
+        >
+          Active
+          <span className="count">{activeCount}</span>
+        </button>
+        <button
+          onClick={() => dispatch(setFilter("completed"))}
+          className={`filter-button ${filter === "completed" ? "active" : ""} `}
+        >
+          Completed
+          <span className="count">{completedCount}</span>
+        </button>
       </div>
 
       <div
@@ -105,7 +128,7 @@ export const ToDoList = () => {
           margin: "0 auto",
         }}
       >
-        {toDoList.toDoList.map(
+        {filteredToDoList.map(
           (item: { id: string; text: string; completed: boolean }) => (
             <ToDoItem
               item={item}
